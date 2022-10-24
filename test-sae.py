@@ -8,17 +8,17 @@ r = [0,1,0,1,0,1,0,1]
 
 
 formule = [[1,2,-3],[-1,-2],[1,3]]
-
-
+clause = [1,-2,3]
+list_var = [True, None, False]
 
 # QUESTION 1.3.1 --------------------
 
 def evaluer_clause(clause,list_var):
     #Pour chaque valuation on verfie la satisfiabilité de la clause
     for x,y in zip(clause, list_var):
-        if x >0 and y == True:
+        if x >0 and (y == True or y == None):
             return True
-        elif x<0 and y == False:
+        elif x<0 and (y == False or y == None):
             return True
     
     return False
@@ -90,7 +90,7 @@ def determine_valuations(list_var):
         if avancement == len(x):
             valuations_finales.append(x)
     return(valuations_finales)
-print(determine_valuations([True, None, False]))
+print(determine_valuations([True,False,None]))
 #Question 1.4.1
 
 def resol_sat_force_brute(formule, list_var):
@@ -98,3 +98,4 @@ def resol_sat_force_brute(formule, list_var):
     
     return(evaluer_cnf(formule, valuations))
 
+print(resol_sat_force_brute(formule, list_var))
