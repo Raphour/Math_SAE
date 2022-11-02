@@ -100,7 +100,16 @@ def determine_valuations(list_var):
     Renvoie : La liste de toutes les valuations (sans doublon) envisageables pour les variables de list_var
 '''
     valuations = []
-    [True if v is None else v for v in list_var]
+    nonecount = list_var.count(None)
+    nb_val = 2**nonecount
+    T_F_List = [True, False]
+    for i in range(nb_val):
+        valuations.append(copy.deepcopy(list_var))
+        for j in range(nonecount):
+            valuations[i][list_var.index(None)] = T_F_List[(i//(2**j))%2]
+    return valuations
+
+print(determine_valuations([None,None]))
 
 
     # n = len(list_var)
