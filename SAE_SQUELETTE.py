@@ -98,18 +98,38 @@ def evaluer_cnf(formule,list_var):
 def determine_valuations(list_var):
     '''Arguments : une liste de booléens informant de valeurs logiques connues (ou None dans le cas contraire) pour un ensemble de variables
     Renvoie : La liste de toutes les valuations (sans doublon) envisageables pour les variables de list_var
+
 '''
     valuations = []
-    nonecount = list_var.count(None)
-    nb_val = 2**nonecount
-    T_F_List = [True, False]
-    for i in range(nb_val):
-        valuations.append(copy.deepcopy(list_var))
-        for j in range(nonecount):
-            valuations[i][list_var.index(None)] = T_F_List[(i//(2**j))%2]
-    return valuations
+    def replace_none(list_var):
+        
+        for i in range(len(list_var)):
+            if list_var[i] == None:
+                copy_list_var = copy.deepcopy(list_var)
+                copy_list_var[i] = True
+                copy_list_var2 = copy.deepcopy(list_var)
+                copy_list_var2[i] = False
+        return [copy_list_var, copy_list_var2]
+                
 
-print(determine_valuations([None,None]))
+    if None not in list_var:
+        return [list_var]
+    else:
+
+        replace_true, replace_false =  replace_none(list_var)	
+        valuations.append(replace_false)
+        valuations.append(replace_true)
+        print("valuations", valuations)
+        print (replace_true, replace_false)
+
+    
+
+    valuations = "oui"
+    return valuations
+    
+    
+
+determine_valuations([None,None])
 
 
     # n = len(list_var)
@@ -157,7 +177,7 @@ def resol_sat_force_brute(formule,list_var):
     valuations = determine_valuations(list_var)
     for valuation in valuations:
         if evaluer_cnf(formule, valuation) == True:
-            print(True, valuation)
+            
             return True, valuation
     return False, []
             
