@@ -101,35 +101,17 @@ def determine_valuations(list_var):
 
 '''
     valuations = []
-    def replace_none(list_var):
-        
-        for i in range(len(list_var)):
-            if list_var[i] == None:
-                copy_list_var = copy.deepcopy(list_var)
-                copy_list_var[i] = True
-                copy_list_var2 = copy.deepcopy(list_var)
-                copy_list_var2[i] = False
-        return [copy_list_var, copy_list_var2]
-                
-
-    if None not in list_var:
-        return [list_var]
-    else:
-
-        replace_true, replace_false =  replace_none(list_var)	
-        valuations.append(replace_false)
-        valuations.append(replace_true)
-        print("valuations", valuations)
-        print (replace_true, replace_false)
-
-    
-
-    valuations = "oui"
+    indices = [i for i in range(len(list_var)) if list_var[i] == None]
+    for i in range(2**len(indices)):
+        valuation = copy.deepcopy(list_var)
+        for j in range(len(indices)):
+            valuation[indices[j]] = (i // 2**j) % 2 == 1
+        valuations.append(valuation)	
     return valuations
     
     
 
-determine_valuations([None,None])
+print(determine_valuations([None,None,True]))
 
 
     # n = len(list_var)
@@ -162,15 +144,14 @@ determine_valuations([None,None])
     #     if avancement == len(x):
     #         valuations_finales.append(x)
     # return(valuations_finales)
-
-# list_var1=[True,None,False,None]
-# print(test_determine_valuations('res_test_determine_valuations cas 1 : ',list_var1,[[True, True, False, True], [True, False, False, True], [True, True, False, False], [True, False, False, False]]))
-# list_var2=[None,False,True,None,True,False]
-# print(test_determine_valuations('res_test_determine_valuations cas 2 : ',list_var2,[[True, False, True, True, True, False], [False, False, True, True, True, False], [True, False, True, False, True, False], [False, False, True, False, True, False]]))
-# list_var3=[False,True,True,False]
-# print(test_determine_valuations('res_test_determine_valuations cas 3 : ',list_var3,[[False, True, True, False]]))
-# list_var4=[None,None,None]
-# print(test_determine_valuations('res_test_determine_valuations cas 4 : ',list_var4,[[True, True, True], [False, True, True], [True, False, True], [False, False, True], [True, True, False], [False, True, False], [True, False, False], [False, False, False]]))
+list_var1=[True,None,False,None]
+print(test_determine_valuations('res_test_determine_valuations cas 1 : ',list_var1,[[True, True, False, True], [True, False, False, True], [True, True, False, False], [True, False, False, False]]))
+list_var2=[None,False,True,None,True,False]
+print(test_determine_valuations('res_test_determine_valuations cas 2 : ',list_var2,[[True, False, True, True, True, False], [False, False, True, True, True, False], [True, False, True, False, True, False], [False, False, True, False, True, False]]))
+list_var3=[False,True,True,False]
+print(test_determine_valuations('res_test_determine_valuations cas 3 : ',list_var3,[[False, True, True, False]]))
+list_var4=[None,None,None]
+print(test_determine_valuations('res_test_determine_valuations cas 4 : ',list_var4,[[True, True, True], [False, True, True], [True, False, True], [False, False, True], [True, True, False], [False, True, False], [True, False, False], [False, False, False]]))
 
 
 def resol_sat_force_brute(formule,list_var):
@@ -214,30 +195,54 @@ formule : comme précédemment
 litteral : un entier non nul traduisant la valeur logique prise par une variable
     Renvoie : la formule simplifiée
 '''
+    delete_clause_list  = []
+    for clause in formule:
+        print(formule)
+        print(clause)
+        if litteral in clause:
+            delete_clause_list.append(clause)
+        elif -litteral in clause:
+            clause.remove(-litteral)
+    for clause in delete_clause_list:
+        formule.remove(clause)
+        
+            
     
-'''for1=[[1,2,4,-5],[-1,2,3,-4],[-1,-2,-5],[-3,4,5],[-2,3,4,5],[-4]]
+    return formule
+    
+for1=[[1,2,4,-5],[-1,2,3,-4],[-1,-2,-5],[-3,4,5],[-2,3,4,5],[-4]]
 litt1=4
-test('essai cas 1 enlever_litt_for : ',enlever_litt_for(for1,litt1),[[-1, 2, 3], [-1, -2, -5], []])'''
+test('essai cas 1 enlever_litt_for : ',enlever_litt_for(for1,litt1),[[-1, 2, 3], [-1, -2, -5], []])
 
 def retablir_for(formule_init,list_chgmts):
-    '''Arguments : une formule initiale et une liste de changements à apporter sur un ensemble de variables (chaque changement étant une liste [i,bool] avec i l'index qu'occupe la variable dans list_var et bool la valeur logique qui doit lui être assignée) 
+    '''Arguments : une formule initiale et une liste de changements à apporter sur un ensemble de variables (chaque changement étant une liste [i,bool] avec i l'index qu'occupe la variable dans list_var et
+     bool la valeur logique qui doit lui être assignée) 
     Renvoie : la formule simplifiée en tenant compte de l'ensemble des changements
 '''
+    print("init",formule_init)
+    for i in list_chgmts:
+        if i[1] :
+            formule_simpl = enlever_litt_for(formule_init,i[0]+1)
+        elif i[1] == False :
+            formule_simpl = enlever_litt_for(formule_init,-(i[0]+1))
+    print(formule_simpl)
+        
+    return formule_simpl
 
-'''
-formule_init:  [[1, 2, 4, -5], [-1, 2, 3, -4], [-1, -2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]]
-list_chgmts1 : [[0, True], [1, True], [2, False]]
-form1 : [[-5], [4, 5], [-4, 5]]
 
-list_chgmts2 : [[0, True], [1, True], [2, False], [3, True], [4, False]]
-form2 : [[]]
+formule_init=  [[1, 2, 4, -5], [-1, 2, 3, -4], [-1, -2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]]
+list_chgmts1 = [[0, True], [1, True], [2, False]]
+form1 = [[-5], [4, 5], [-4, 5]]
 
-list_chgmts3 : [[0, True], [1, True], [2, False], [3, False]]
-form3 : [[-5], [5]]
-test('essai cas 1 retablir_for : ',retablir_for(formule_init,list_chgmts1),form1)
-test('essai cas 2 retablir_for : ',retablir_for(formule_init,list_chgmts2),form2)
+list_chgmts2 = [[0, True], [1, True], [2, False], [3, True], [4, False]]
+form2 = [[]]
+
+list_chgmts3 = [[0, True], [1, True], [2, False], [3, False]]
+form3 = [[-5], [5]]
+# test('essai cas 1 retablir_for : ',retablir_for(formule_init,list_chgmts1),form1)
+# test('essai cas 2 retablir_for : ',retablir_for(formule_init,list_chgmts2),form2)
 test('essai cas 3 retablir_for : ',retablir_for(formule_init,list_chgmts3),form3)
-'''
+
 
 def progress(list_var,list_chgmts):
     '''Arguments : list_var, list_chgmts définies comme précédemment
