@@ -248,8 +248,29 @@ def progress(list_var,list_chgmts):
     '''Arguments : list_var, list_chgmts définies comme précédemment
     Renvoie : l1,l2
     l1 : nouvelle list_var 
-    l2 : nouvelle list_chgmts 
+    l2 : nouvelle list_chgmts
+    Une fonction progress(list_var,list_chgmts) qui permet de descendre dans l’arbre
+jusqu’à un premier changement à apporter à la liste de variables. La fonction renvoie alors
+la nouvelle valuation en cours list_var et la nouvelle liste des changements apportés à
+list_var depuis le lancement de la résolution de la formule. Cette liste des changements
+renvoyée correspond donc à la liste des changements précédents à laquelle on rajoute une
+liste correspondant au changement apporté. Ainsi par exemple si à partir d’une liste de
+3
+changements initiale [0,False] on affecte la valeur True à la variable en position 2, on
+rajoutera la liste [2,True] et on renverra la liste [[0,False],[2,True]]  
 '''
+    for i in range(len(list_var)):
+        if list_var[i] == None:
+            list_var[i] = False
+            list_chgmts.append([i,False])
+            return list_var,list_chgmts
+        elif list_var[i] == False:
+            list_var[i] = True
+            list_chgmts.append([i,True])
+            return list_var,list_chgmts
+        else:
+            list_var[i] = None
+    return list_var,list_chgmts
     
 
 def progress_simpl_for(formule,list_var,list_chgmts):
@@ -278,6 +299,7 @@ def retour(list_var,list_chgmts):
     l2 : la liste actualisée de l'ensemble des changements effectués depuis une formule initiale
     
     '''
+    
 
 def retour_simpl_for(formule_init,list_var,list_chgmts):
     '''
