@@ -520,8 +520,8 @@ def resol_parcours_arbre(formule_init,list_var,list_chgmts):
     fine renvoyer deux éléments :
     — Un booléen précisant si la formule est satisfiable ou non
     — Une liste         '''
-    
 
+d
 
     
     
