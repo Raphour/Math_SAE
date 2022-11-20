@@ -626,7 +626,20 @@ def creer_grille_init(list,n):
     '''Arguments : une liste de listes(contenant les coordonnées à renseigner et le nombre correspondant) et un entier donnant la taille de la grille
         Renvoie : une liste (list_grille_complete) avec les valeurs qui devront s'afficher dans la grille en la parcourant ligne après ligne de haut en bas et de gauche à droite
 '''
+    list_grille_complete=[]
+    for i in range(n):
+        list_grille_complete.append([])
+        for j in range(n):
+            list_grille_complete[i].append(0)
+    for i in range(len(list)):
+        list_grille_complete[list[i][0]][list[i][1]]=list[i][2]
+    return list_grille_complete
     
+
+#test creer_grille_init & init_list_var cas2
+list_grille2=[[1,2,1],[2,1,4],[2,2,2],[3,3,2],[4,2,3]]
+grille2=creer_grille_init(list_grille2,2)
+list_var_grille2=init_list_var(grille2,2)
 def creer_grille_final(list_var,n):
     '''
     Renvoie : une liste (list_grille_complete) avec les valeurs qui devront s'afficher dans la grille (en fonction des valeurs logiques prises par les variables de list_var) en la parcourant ligne après ligne de haut en bas et de gauche à droite
@@ -645,7 +658,12 @@ def for_conj_sudoku(n):
 def init_list_var(list_grille_complete,n):
     '''
     Renvoie : une liste list_var initialisant une valuation tenant compte des valeurs non nulles déjà renseignées dans list_grille_complete
-'''
+    Créer une fonction init_list_var(list_grille_complete,n) permettant de renvoyer
+    une initialisation de la liste de valuations list_var en tenant compte des valeurs déjà
+    renseignées dans list_grille_complete.
+    '''
+    
+
 
 '''#test evaluer_clause
 #Arg Cas 1 :
