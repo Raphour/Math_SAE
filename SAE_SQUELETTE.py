@@ -230,12 +230,12 @@ litteral : un entier non nul traduisant la valeur logique prise par une variable
             formule_simpl.append(clause)
     return formule_simpl
 #TEST OK
-'''
+
 for1=[[1,2,4,-5],[-1,2,3,-4],[-1,-2,-5],[-3,4,5],[-2,3,4,5],[-4]]
 litt1=4
 
 test('essai cas 1 enlever_litt_for : ',enlever_litt_for(for1,litt1),[[-1, 2, 3], [-1, -2, -5], []])
-'''
+
 def retablir_for(formule_init,list_chgmts):
 #     '''Arguments : une formule initiale et une liste de changements à apporter sur un ensemble de variables (chaque changement étant une liste [i,bool] avec i l'index qu'occupe la variable dans list_var et
 #      bool la valeur logique qui doit lui être assignée) 
@@ -366,17 +366,12 @@ def progress_simpl_for(formule,list_var,list_chgmts):
     et la nouvelle liste des changements apportés à list_var depuis le lancement de la résolu-
     tion de la formule (précisions dans la description de progress(list_var,list_chgmts)) ;
 '''
-
+    l1,l2 = progress(list_var,list_chgmts)
+    form = retablir_for(formule,l2)
+    return form,l1,l2   
     
 
 
-
-
-
-
-
-
-'''
 formule= [[1, 2, 4, -5], [-1, 2, 3, -4], [-1, -2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]] 
 list_var= [None, None, None, None, None] 
 list_chgmts= []
@@ -395,7 +390,7 @@ list_var= [True, False, None, None, None]
 list_chgmts= [[0, True], [1, False]]
 cor_form,cor_l1,cor_l2= ([[4, 5], [-4, 5]],[True, False, True, None, None],[[0, True], [1, False], [2, True]])
 test('essai3_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
-'''
+
 def progress_simpl_for_dpll(formule,list_var,list_chgmts,list_sans_retour):
     '''Arguments : list_sans_retour contient l'ensemble des numéros de variables auxquelles on a affecté une valeur logique sur laquelle on ne reviendra pas
     renvoie :form,l1,l2,l3 avec :
@@ -493,12 +488,36 @@ test("essai cas 6 retour : ",retour(list_var,list_chgmts),(l1,l2))
 
 def retour_simpl_for(formule_init,list_var,list_chgmts):
     '''
+    Une fonction retour_simpl_for(formule_init,list_var,list_chgmts) qui va permettre
+    de remonter dans l’arbre en annulant les effets des changements précédemment effectués
+    et en supprimant leurs enregistrements, jusqu’à arriver à un branchement où on puisse ef-
+    fectuer un nouveau changement en redescendant vers la droite dans l’arbre, auquel cas on
+    renverra la nouvelle formule à prendre en compte (établie à partir de la formule initiale dé-
+    finie au début de la résolution et de la nouvelle liste des changements à prendre en compte),
+    la nouvelle liste des valeurs affectées aux variables, la nouvelle liste des changements en
+    cours. Une attention sera à apporter au cas où la liste des changements serait vide.
+    Ces précédentes fonction s’appuieront sur les deux fonctions suivantes pour la simplification d’une
+    formule logique ou le retour en arrière sur ces simplifications : enlever_litt_for(formule,liste_var) et retablir_for(formule,liste_var)
+    
 Renvoie : form,l1,l2
     form : nouvelle formule
     l1 : nouvelle list_var 
     l2 : nouvelle list_chgmts 
 '''
-    
+    if len(list_chgmts)>0:
+        if list_chgmts[-1][1]==True:
+            list_var[list_chgmts[-1][0]]=False
+            list_chgmts[-1][1] = False
+            form = retablir_for(formule_init,list_var)
+            
+        else:
+            list_var[list_chgmts[-1][0]]=None
+            list_chgmts = list_chgmts[:-1]
+            form = retablir_for(formule_init,list_var)
+            list_var, list_chgmts = retour_simpl_for(formule_init,list_var,list_chgmts)
+    else:
+        form = formule_init
+    return form,list_var,list_chgmts
 
 def retour_simpl_for_dpll(formule_init,list_var,list_chgmts,list_sans_retour):
     '''
@@ -521,11 +540,11 @@ def resol_parcours_arbre(formule_init,list_var,list_chgmts):
     — Un booléen précisant si la formule est satisfiable ou non
     — Une liste         '''
 
-d
+
 
     
     
-
+'''
 formule_init= [[1, 4, -5], [-1, -5], [2, -3, 5], [2, -4], [2, 4, 5], [-1, -2], [-1, 2, -3], [-2, 4, -5], [1, -2]] 
 list_var= [True, True, False, True, None] 
 list_chgmts= [[1, True]]
@@ -543,7 +562,7 @@ list_var= [False, True, False, None, None]
 list_chgmts= [[1, True]]
 cor_resol=(True,[False, True, False, True, False])
 test('essai3_resol_parcours_arbre : ',resol_parcours_arbre(formule_init,list_var,list_chgmts),cor_resol)
-
+'''
 
 def resol_parcours_arbre_simpl_for(formule_init,formule,list_var,list_chgmts):#la même distinction peut être faite entre formule et formule_init
     '''
@@ -621,25 +640,32 @@ l1=une liste de valuations rendant la formule vraie ou une liste vide
 
     Affichage possible du temps mis pour la résolution
 '''
-
-def creer_grille_init(list,n):
-    '''Arguments : une liste de listes(contenant les coordonnées à renseigner et le nombre correspondant) et un entier donnant la taille de la grille
-        Renvoie : une liste (list_grille_complete) avec les valeurs qui devront s'afficher dans la grille en la parcourant ligne après ligne de haut en bas et de gauche à droite
+'''Arguments : une liste de listes(contenant les coordonnées à renseigner et le nombre correspondant) et un entier donnant la taille de la grille
+Renvoie : une liste (list_grille_complete) avec les valeurs qui devront s'afficher dans la grille en la parcourant ligne après ligne de haut
+en bas et de gauche à droite
+Créer une fonction creer_grille_init(list_grille_coord_connues,n) prenant en
+arguments une liste de listes(contenant les coordonnées des cases renseignées dans la
+grille et le nombre correspondant) et un nombre n spécifiant la taille de la grille voulue
+et renvoyant une liste à une dimension de taille n*n*n*n  attribuant la valeur 0 à toutes les cases pour lesquelles
+la valeur est inconnue et la valeur figurant dans la liste en argument pour les autres.
+Ainsi avec [[1,2,1],[2,1,4],[2,2,2],[3,3,2],[4,2,3]] et n=2 on renverrait la liste :
+[0, 1, 0, 0, 4, 2, 0, 0, 0, 0, 2, 0, 0, 3, 0, 0]
 '''
-    list_grille_complete=[]
-    for i in range(n):
-        list_grille_complete.append([])
-        for j in range(n):
-            list_grille_complete[i].append(0)
-    for i in range(len(list)):
-        list_grille_complete[list[i][0]][list[i][1]]=list[i][2]
-    return list_grille_complete
-    
+def creer_grille_init(list,n):
+     # Créer la grille (avec des 0)
+    grille = [0 for i in range(n**2**2)]
+    # Assigner les valeurs 
+    for valeur in list:
+        # Numéro de ligne * taille de la ligne + numéro de colonne - 1
+        grille[(valeur[0]-1)*(n**2)+(valeur[1]-1)] = valeur[2]
+    return grille
+
 
 #test creer_grille_init & init_list_var cas2
 list_grille2=[[1,2,1],[2,1,4],[2,2,2],[3,3,2],[4,2,3]]
 grille2=creer_grille_init(list_grille2,2)
-list_var_grille2=init_list_var(grille2,2)
+print(grille2)
+# list_var_grille2=init_list_var(grille2,2)
 def creer_grille_final(list_var,n):
     '''
     Renvoie : une liste (list_grille_complete) avec les valeurs qui devront s'afficher dans la grille (en fonction des valeurs logiques prises par les variables de list_var) en la parcourant ligne après ligne de haut en bas et de gauche à droite
@@ -657,7 +683,7 @@ def for_conj_sudoku(n):
 
 def init_list_var(list_grille_complete,n):
     '''
-    Renvoie : une liste list_var initialisant une valuation tenant compte des valeurs non nulles déjà renseignées dans list_grille_complete
+    Renvoie : une liste list_var initialisant une valuation tenant compte des valeurs non nulles déjà renseignées dans list_grille_complete 
     Créer une fonction init_list_var(list_grille_complete,n) permettant de renvoyer
     une initialisation de la liste de valuations list_var en tenant compte des valeurs déjà
     renseignées dans list_grille_complete.
