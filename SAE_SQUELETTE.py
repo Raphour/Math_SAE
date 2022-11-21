@@ -1,5 +1,5 @@
 from re import X
-#import numpy as np
+import numpy as np
 import copy
 import time
 
@@ -672,14 +672,37 @@ def creer_grille_final(list_var,n):
 '''
 
 def afficher_grille(grille,n):
-    ''''''
+    '''
+    Créer une fonction afficher_grille(list_grille_complete,n) qui, à partir d’une
+    liste au format correspondant à une liste renvoyée par la fonction précédente, permettra
+    l’affichage de la grille sous sa forme habituelle (on pourra par exemple simplement utiliser
+    la fonction reshape de la bibliothèque numpy. Ainsi à partir de l’exemple précédent on
+    obtiendrait la grille (la mise en forme avec les lignes n’est pas attendue) '''
+    # Afficher la grille
+    print(np.reshape(grille, (n**2, n**2)))
+afficher_grille(grille2,2)
 
 def for_conj_sudoku(n):
     '''
     Renvoie : la formule (liste de listes) associée à une grille de sudoku de taille n selon les attentes formulées dans le sujet
+    Créer une fonction for_conj_sudoku(n) prenant en argument la dimension de la grille
+    voulue (nombre de ligne et colonne par région) et renvoyant la formule normale conjonc-
+    tive attendue permettant le respect des contraintes 𝐶1 à 𝐶4. Les contraintes 𝐶1 et 𝐶2
+    se traduiront chacune par n4 clauses de n2 littéraux (chaque nombre doit être présent au
+    moins une fois) et (n4 (n2 −1))/2 clauses binaires (mais pas de doublon). En évitant des doublons
+    avec des clauses déjà précédemment établies, la contrainte 𝐶3 se traduira par n4 clauses de
+    n2 littéraux et (n4*(n2 −5))/2 clauses binaires. La contrainte 𝐶4 se traduira par (n6*(n2 −1))/2 clauses binaires
+       
     '''
+    # Créer la formule
+    formule = []
+    # Ajouter les contraintes C1 et C2
     
+    return formule
 
+#Cas grille Taille 3
+formul_sudok3=for_conj_sudoku(3)
+print("formul_sudok taille 3: \n",formul_sudok3)
 
 def init_list_var(list_grille_complete,n):
     '''
@@ -688,6 +711,14 @@ def init_list_var(list_grille_complete,n):
     une initialisation de la liste de valuations list_var en tenant compte des valeurs déjà
     renseignées dans list_grille_complete.
     '''
+    list_var = []
+    for i in range(n**2):
+        for j in range(n**2):
+            if list_grille_complete[i*n**2+j] != 0:
+                list_var.append((i*n**2+j)*n+list_grille_complete[i*n**2+j])
+    return list_var
+
+print(init_list_var(grille2,2))
     
 
 
