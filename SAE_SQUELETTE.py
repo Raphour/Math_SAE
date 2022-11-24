@@ -75,14 +75,6 @@ def evaluer_clause(clause,list_var):
                 return True
             elif y == None:
                 return None
-        else:
-            y = list_var[abs(x)-1]
-            if x >0 and y == True :
-                return True
-            elif x<0 and y == False:
-                return True
-            elif y == None:
-                return None
             
     return False
 
@@ -149,7 +141,6 @@ def resol_sat_force_brute(formule,list_var):
     valuations = determine_valuations(list_var)
     for valuation in valuations:
         if evaluer_cnf(formule, valuation) == True:
-            
             return True, valuation
     return False, []
             
@@ -165,31 +156,33 @@ def resol_sat_force_brute(formule,list_var):
 # list_var_for1_test1=[True,False,False,None]
 # test('test1 resol_sa_force_brut: ',resol_sat_force_brute(for1,list_var_for1_test1),(True, [True,False,False,False]))
 
+def enlever_litt_for(formule,litteral):
+    '''Arguments :
+formule : comme précédemment
+litteral : un entier non nul traduisant la valeur logique prise par une variable
+    Renvoie : la formule simplifiée
+'''
+    
+    for i in range(len(formule)-1,-1,-1):
+        for j in range(len(formule[i])):
+            if litteral==formule[i][j]:
+                del formule[i]
+                break
+            if litteral == -formule[i][j]:
+                del formule[i][j]
+                break
+    return formule
+
 
 def init_formule_simpl_for(formule_init,list_var):
-    '''
-    Renvoie : La formule simplifiée en tenant compte des valeurs logiques renseignées dans list_var
-'''
-    formule_simpl = []
-    formule = copy.deepcopy(formule_init)
-    for clause in formule:
-        clause_simpl = []
-        for litteral in clause:
-            if abs(litteral) <= len(list_var):
-                if list_var[abs(litteral)-1] == None:
-                    clause_simpl.append(litteral)
-                elif list_var[abs(litteral)-1] == True and litteral > 0:
-                    clause_simpl = []
-                    break
-                elif list_var[abs(litteral)-1] == False and litteral < 0:
-                    clause_simpl = []
-                    break
-        if len(clause_simpl) > 0:
-            formule_simpl.append(clause_simpl)
-    return formule_simpl
-
-    #TEST OK
-'''
+    for i in range(len(list_var)):
+        if list_var[i]==True:
+            litteral=i+1
+            enlever_litt_for(formule_init,litteral)
+        if list_var[i]==False:
+            litteral=-i-1
+            enlever_litt_for(formule_init,litteral)
+    return formule_init
 for1=[[1,2],[-3,4],[-1,-2],[-1,-2,-3],[1]]
 list_var = [True,None,None,None]
 
@@ -208,27 +201,10 @@ for3= [[-5, -1], [-1, -3], [4], [-4, 1], [-2, -1, 3]]
 cor_for3=[[-5, -1], [-1, -3], [1], [-2, -1, 3]]
 
 test_for('test_init_formule_simpl_for : ',init_formule_simpl_for(for3,list_var_for3),cor_for3)
-'''
 
 
-def enlever_litt_for(formule,litteral):
-    '''Arguments :
-formule : comme précédemment
-litteral : un entier non nul traduisant la valeur logique prise par une variable
-    Renvoie : la formule simplifiée
-'''
-    formule_simpl = []
-    copy_formule = copy.deepcopy(formule)
-    for clause in copy_formule:
-        if litteral in clause:
-            clause.remove(litteral)
-        elif -litteral in clause:
-            clause.remove(-litteral)
-            if len(clause) >= 0:
-                formule_simpl.append(clause)
-        else:
-            formule_simpl.append(clause)
-    return formule_simpl
+
+
 #TEST OK
 
 for1=[[1,2,4,-5],[-1,2,3,-4],[-1,-2,-5],[-3,4,5],[-2,3,4,5],[-4]]
@@ -237,21 +213,18 @@ litt1=4
 test('essai cas 1 enlever_litt_for : ',enlever_litt_for(for1,litt1),[[-1, 2, 3], [-1, -2, -5], []])
 
 def retablir_for(formule_init,list_chgmts):
-#     '''Arguments : une formule initiale et une liste de changements à apporter sur un ensemble de variables (chaque changement étant une liste [i,bool] avec i l'index qu'occupe la variable dans list_var et
-#      bool la valeur logique qui doit lui être assignée) 
-#     Renvoie : la formule simplifiée en tenant compte de l'ensemble des changements
+    # Créer une liste des variations
+    formule = copy.deepcopy(formule_init)
+    list_var = [None for i in range(5)]
+    # Ajouter les variations
+    for changement in list_chgmts:
+        list_var[changement[0]] = changement[1]
+    # Simplifier la formule
+    formule = init_formule_simpl_for(formule,list_var)
 
-    
-    for i in list_chgmts:
-        if i[1] :
-            formule_simpl = enlever_litt_for(formule_init,i[0]+1)
-        elif i[1] == False :
-            formule_simpl = enlever_litt_for(formule_init,-(i[0]+1))
-    
-        
-    return formule_simpl
+    return formule
 # TEST OK
-'''
+
 formule_init=  [[1, 2, 4, -5], [-1, 2, 3, -4], [-1, -2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]]
 list_chgmts1 = [[0, True], [1, True], [2, False]]
 form1 = [[-5], [4, 5], [-4, 5]]
@@ -264,7 +237,7 @@ form3 = [[-5], [5]]
 test('essai cas 1 retablir_for : ',retablir_for(formule_init,list_chgmts1),form1)
 test('essai cas 2 retablir_for : ',retablir_for(formule_init,list_chgmts2),form2)
 test('essai cas 3 retablir_for : ',retablir_for(formule_init,list_chgmts3),form3)
-'''
+
 
 
 def progress(list_var,list_chgmts):
@@ -284,7 +257,7 @@ Arguments : list_var, list_chgmts définies comme précédemment
             l2.append([i,True])
             
             return l1,l2
-    print(l1,l2)
+
     return l1,l2
 # TEST OK
 '''
@@ -372,24 +345,24 @@ def progress_simpl_for(formule,list_var,list_chgmts):
     
 
 
-formule= [[1, 2, 4, -5], [-1, 2, 3, -4], [-1, -2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]] 
-list_var= [None, None, None, None, None] 
-list_chgmts= []
-cor_form,cor_l1,cor_l2= ([[2, 3, -4], [-2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]],[True, None, None, None, None],[[0, True]])
-test('essai1_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
+# formule= [[1, 2, 4, -5], [-1, 2, 3, -4], [-1, -2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]] 
+# list_var= [None, None, None, None, None] 
+# list_chgmts= []
+# cor_form,cor_l1,cor_l2= ([[2, 3, -4], [-2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]],[True, None, None, None, None],[[0, True]])
+# test('essai1_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
  
  
-formule= [[-5], [5]] 
-list_var= [True, True, True, False, None] 
-list_chgmts= [[0, True], [1, True], [2, True], [3, False]]
-cor_form,cor_l1,cor_l2= ([[]],[True, True, True, False, True],[[0, True], [1, True], [2, True], [3, False], [4, True]])
-test('essai2_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
+# formule= [[-5], [5]] 
+# list_var= [True, True, True, False, None] 
+# list_chgmts= [[0, True], [1, True], [2, True], [3, False]]
+# cor_form,cor_l1,cor_l2= ([[]],[True, True, True, False, True],[[0, True], [1, True], [2, True], [3, False], [4, True]])
+# test('essai2_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
 
-formule= [[3, -4], [-3, 4, 5], [-4, 5]] 
-list_var= [True, False, None, None, None] 
-list_chgmts= [[0, True], [1, False]]
-cor_form,cor_l1,cor_l2= ([[4, 5], [-4, 5]],[True, False, True, None, None],[[0, True], [1, False], [2, True]])
-test('essai3_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
+# formule= [[3, -4], [-3, 4, 5], [-4, 5]] 
+# list_var= [True, False, None, None, None] 
+# list_chgmts= [[0, True], [1, False]]
+# cor_form,cor_l1,cor_l2= ([[4, 5], [-4, 5]],[True, False, True, None, None],[[0, True], [1, False], [2, True]])
+# test('essai3_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
 
 def progress_simpl_for_dpll(formule,list_var,list_chgmts,list_sans_retour):
     '''Arguments : list_sans_retour contient l'ensemble des numéros de variables auxquelles on a affecté une valeur logique sur laquelle on ne reviendra pas
@@ -661,11 +634,11 @@ def creer_grille_init(list,n):
     return grille
 
 
-#test creer_grille_init & init_list_var cas2
-list_grille2=[[1,2,1],[2,1,4],[2,2,2],[3,3,2],[4,2,3]]
-grille2=creer_grille_init(list_grille2,2)
-print(grille2)
-# list_var_grille2=init_list_var(grille2,2)
+# #test creer_grille_init & init_list_var cas2
+# list_grille2=[[1,2,1],[2,1,4],[2,2,2],[3,3,2],[4,2,3]]
+# grille2=creer_grille_init(list_grille2,2)
+# print(grille2)
+# # list_var_grille2=init_list_var(grille2,2)
 def creer_grille_final(list_var,n):
     '''
     Renvoie : une liste (list_grille_complete) avec les valeurs qui devront s'afficher dans la grille (en fonction des valeurs logiques prises par les variables de list_var) en la parcourant ligne après ligne de haut en bas et de gauche à droite
@@ -680,7 +653,7 @@ def afficher_grille(grille,n):
     obtiendrait la grille (la mise en forme avec les lignes n’est pas attendue) '''
     # Afficher la grille
     print(np.reshape(grille, (n**2, n**2)))
-afficher_grille(grille2,2)
+# afficher_grille(grille2,2)
 
 def for_conj_sudoku(n):
     '''
@@ -702,7 +675,7 @@ def for_conj_sudoku(n):
 
 #Cas grille Taille 3
 formul_sudok3=for_conj_sudoku(3)
-print("formul_sudok taille 3: \n",formul_sudok3)
+
 
 def init_list_var(list_grille_complete,n):
     '''
@@ -718,7 +691,6 @@ def init_list_var(list_grille_complete,n):
                 list_var.append((i*n**2+j)*n+list_grille_complete[i*n**2+j])
     return list_var
 
-print(init_list_var(grille2,2))
     
 
 
