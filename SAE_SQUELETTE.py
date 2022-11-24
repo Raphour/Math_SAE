@@ -68,31 +68,33 @@ def evaluer_clause(clause,list_var):
         return False
     
     for x,y in zip(clause, list_var):
-        if abs(x)-1 == list_var.index(y):
-            if x >0 and y == True :
-                return True
-            elif x<0 and y == False:
-                return True
-            elif y == None:
-                return None
+        y = list_var[abs(x)-1]
+            
+        if x >0 and y == True :
+            return True
+        elif x<0 and y == False:
+            return True
+        elif y == None:
+            return None
+
             
     return False
 
-# clause1=[1,-2,3,-4]
-# list_var1=[True,True,False,None]
-# test("essai cas 1 evaluer_clause : ",evaluer_clause(clause1,list_var1),True)
-# clause2=[1,-2,3,-4]
-# list_var2=[False,True,False,None]
-# test("essai cas 2 evaluer_clause : ",evaluer_clause(clause2,list_var2),None)
-# clause3=[1,-2,3,-4]
-# list_var3=[None,True,False,True]
-# test("essai cas 3 evaluer_clause : ",evaluer_clause(clause3,list_var3),None)
-# clause4=[2,-3]
-# list_var4=[False,False,True,False]
-# test("essai cas 4 evaluer_clause : ",evaluer_clause(clause4,list_var4),False)
-# clause5=[]
-# list_var5=[False,False,True]
-# test("essai cas 5 evaluer_clause : ",evaluer_clause(clause5,list_var5),False)
+clause1=[1,-2,3,-4]
+list_var1=[True,True,False,None]
+test("essai cas 1 evaluer_clause : ",evaluer_clause(clause1,list_var1),True)
+clause2=[1,-2,3,-4]
+list_var2=[False,True,False,None]
+test("essai cas 2 evaluer_clause : ",evaluer_clause(clause2,list_var2),None)
+clause3=[1,-2,3,-4]
+list_var3=[None,True,False,True]
+test("essai cas 3 evaluer_clause : ",evaluer_clause(clause3,list_var3),None)
+clause4=[2,-3]
+list_var4=[False,False,True,False]
+test("essai cas 4 evaluer_clause : ",evaluer_clause(clause4,list_var4),False)
+clause5=[]
+list_var5=[False,False,True]
+test("essai cas 5 evaluer_clause : ",evaluer_clause(clause5,list_var5),False)
 
 def evaluer_cnf(formule,list_var):
     '''Arguments : une liste de listes d'entiers non nuls traduisant une formule,une liste de booléens informant de valeurs logiques connues (ou None dans le cas contraire) pour un ensemble de variables
@@ -100,19 +102,20 @@ def evaluer_cnf(formule,list_var):
 '''
     for clause in formule:
         if evaluer_clause(clause, list_var) == False:
+
             return False
         elif evaluer_clause(clause, list_var) == None:
             return None
     return True
-    
-# for1=[[1,2],[2,-3,4],[-1,-2],[-1,-2,-3],[1]]
-# list_var_for1_test1=[True,False,False,None]
-# test('test1 evaluer_cnf : ',evaluer_cnf(for1,list_var_for1_test1),True)
-# list_var_for1_test2=[None,False,False,None]
-# test('test2 evaluer_cnf : ',evaluer_cnf(for1,list_var_for1_test2),None)
-# list_var_for1_test3=[True,False,True,False]
-# test('test3 evaluer_cnf : ',evaluer_cnf(for1,list_var_for1_test3),False)
-
+'''   
+for1=[[1,2],[2,-3,4],[-1,-2],[-1,-2,-3],[1]]
+list_var_for1_test1=[True,False,False,None]
+test('test1 evaluer_cnf : ',evaluer_cnf(for1,list_var_for1_test1),True)
+list_var_for1_test2=[None,False,False,None]
+test('test2 evaluer_cnf : ',evaluer_cnf(for1,list_var_for1_test2),None)
+list_var_for1_test3=[True,False,True,False]
+test('test3 evaluer_cnf : ',evaluer_cnf(for1,list_var_for1_test3),False)
+'''
 def determine_valuations(list_var):
     '''Arguments : une liste de booléens informant de valeurs logiques connues (ou None dans le cas contraire) pour un ensemble de variables
     Renvoie : La liste de toutes les valuations (sans doublon) envisageables pour les variables de list_var
@@ -126,16 +129,16 @@ def determine_valuations(list_var):
             valuation[indices[j]] = (i // 2**j) % 2 == 1
         valuations.append(valuation)	
     return valuations
-
-# list_var1=[True,None,False,None]
-# print(test_determine_valuations('res_test_determine_valuations cas 1 : ',list_var1,[[True, True, False, True], [True, False, False, True], [True, True, False, False], [True, False, False, False]]))
-# list_var2=[None,False,True,None,True,False]
-# print(test_determine_valuations('res_test_determine_valuations cas 2 : ',list_var2,[[True, False, True, True, True, False], [False, False, True, True, True, False], [True, False, True, False, True, False], [False, False, True, False, True, False]]))
-# list_var3=[False,True,True,False]
-# print(test_determine_valuations('res_test_determine_valuations cas 3 : ',list_var3,[[False, True, True, False]]))
-# list_var4=[None,None,None]
-# print(test_determine_valuations('res_test_determine_valuations cas 4 : ',list_var4,[[True, True, True], [False, True, True], [True, False, True], [False, False, True], [True, True, False], [False, True, False], [True, False, False], [False, False, False]]))
-
+'''
+list_var1=[True,None,False,None]
+print(test_determine_valuations('res_test_determine_valuations cas 1 : ',list_var1,[[True, True, False, True], [True, False, False, True], [True, True, False, False], [True, False, False, False]]))
+list_var2=[None,False,True,None,True,False]
+print(test_determine_valuations('res_test_determine_valuations cas 2 : ',list_var2,[[True, False, True, True, True, False], [False, False, True, True, True, False], [True, False, True, False, True, False], [False, False, True, False, True, False]]))
+list_var3=[False,True,True,False]
+print(test_determine_valuations('res_test_determine_valuations cas 3 : ',list_var3,[[False, True, True, False]]))
+list_var4=[None,None,None]
+print(test_determine_valuations('res_test_determine_valuations cas 4 : ',list_var4,[[True, True, True], [False, True, True], [True, False, True], [False, False, True], [True, True, False], [False, True, False], [True, False, False], [False, False, False]]))
+'''
 
 def resol_sat_force_brute(formule,list_var):
     valuations = determine_valuations(list_var)
@@ -152,9 +155,9 @@ def resol_sat_force_brute(formule,list_var):
     avec SAT : booléen indiquant la satisfiabilité de la formule
           l1 : une liste de valuations rendant la formule vraie ou une liste vide
     '''
-# for1=[[1,2],[2,-3,4],[-1,-2],[-1,-2,-3],[1]]
-# list_var_for1_test1=[True,False,False,None]
-# test('test1 resol_sa_force_brut: ',resol_sat_force_brute(for1,list_var_for1_test1),(True, [True,False,False,False]))
+for1=[[1,2],[2,-3,4],[-1,-2],[-1,-2,-3],[1]]
+list_var_for1_test1=[True,False,False,None]
+test('test1 resol_sa_force_brut: ',resol_sat_force_brute(for1,list_var_for1_test1),(True, [True,False,False,False]))
 
 def enlever_litt_for(formule,litteral):
     '''Arguments :
@@ -186,7 +189,7 @@ def init_formule_simpl_for(formule_init,list_var):
 for1=[[1,2],[-3,4],[-1,-2],[-1,-2,-3],[1]]
 list_var = [True,None,None,None]
 
-
+'''
 list_var_for1=[False, None, None, False, None]
 for1=[[-5, -3, 4, -1], [3], [5, -2], [-2, 1, -4], [1, -3]]
 cor_for1=[[3], [5, -2], [-3]]
@@ -201,7 +204,7 @@ for3= [[-5, -1], [-1, -3], [4], [-4, 1], [-2, -1, 3]]
 cor_for3=[[-5, -1], [-1, -3], [1], [-2, -1, 3]]
 
 test_for('test_init_formule_simpl_for : ',init_formule_simpl_for(for3,list_var_for3),cor_for3)
-
+'''
 
 
 
@@ -224,7 +227,7 @@ def retablir_for(formule_init,list_chgmts):
 
     return formule
 # TEST OK
-
+'''
 formule_init=  [[1, 2, 4, -5], [-1, 2, 3, -4], [-1, -2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]]
 list_chgmts1 = [[0, True], [1, True], [2, False]]
 form1 = [[-5], [4, 5], [-4, 5]]
@@ -237,7 +240,7 @@ form3 = [[-5], [5]]
 test('essai cas 1 retablir_for : ',retablir_for(formule_init,list_chgmts1),form1)
 test('essai cas 2 retablir_for : ',retablir_for(formule_init,list_chgmts2),form2)
 test('essai cas 3 retablir_for : ',retablir_for(formule_init,list_chgmts3),form3)
-
+'''
 
 
 def progress(list_var,list_chgmts):
@@ -345,24 +348,24 @@ def progress_simpl_for(formule,list_var,list_chgmts):
     
 
 
-# formule= [[1, 2, 4, -5], [-1, 2, 3, -4], [-1, -2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]] 
-# list_var= [None, None, None, None, None] 
-# list_chgmts= []
-# cor_form,cor_l1,cor_l2= ([[2, 3, -4], [-2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]],[True, None, None, None, None],[[0, True]])
-# test('essai1_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
+formule= [[1, 2, 4, -5], [-1, 2, 3, -4], [-1, -2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]] 
+list_var= [None, None, None, None, None] 
+list_chgmts= []
+cor_form,cor_l1,cor_l2= ([[2, 3, -4], [-2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]],[True, None, None, None, None],[[0, True]])
+test('essai1_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
  
  
-# formule= [[-5], [5]] 
-# list_var= [True, True, True, False, None] 
-# list_chgmts= [[0, True], [1, True], [2, True], [3, False]]
-# cor_form,cor_l1,cor_l2= ([[]],[True, True, True, False, True],[[0, True], [1, True], [2, True], [3, False], [4, True]])
-# test('essai2_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
+formule= [[-5], [5]] 
+list_var= [True, True, True, False, None] 
+list_chgmts= [[0, True], [1, True], [2, True], [3, False]]
+cor_form,cor_l1,cor_l2= ([[]],[True, True, True, False, True],[[0, True], [1, True], [2, True], [3, False], [4, True]])
+test('essai2_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
 
-# formule= [[3, -4], [-3, 4, 5], [-4, 5]] 
-# list_var= [True, False, None, None, None] 
-# list_chgmts= [[0, True], [1, False]]
-# cor_form,cor_l1,cor_l2= ([[4, 5], [-4, 5]],[True, False, True, None, None],[[0, True], [1, False], [2, True]])
-# test('essai3_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
+formule= [[3, -4], [-3, 4, 5], [-4, 5]] 
+list_var= [True, False, None, None, None] 
+list_chgmts= [[0, True], [1, False]]
+cor_form,cor_l1,cor_l2= ([[4, 5], [-4, 5]],[True, False, True, None, None],[[0, True], [1, False], [2, True]])
+test('essai3_progress_simpl_for : ',progress_simpl_for(formule,list_var,list_chgmts),(cor_form,cor_l1,cor_l2))
 
 def progress_simpl_for_dpll(formule,list_var,list_chgmts,list_sans_retour):
     '''Arguments : list_sans_retour contient l'ensemble des numéros de variables auxquelles on a affecté une valeur logique sur laquelle on ne reviendra pas
@@ -542,8 +545,28 @@ def resol_parcours_arbre_simpl_for(formule_init,formule,list_var,list_chgmts):#l
     Renvoie SAT,l1 avec :
 SAT=True ou False
 l1=une liste de valuations rendant la formule vraie ou une liste vide
-''' 
+
+    resol_parcours_arbre_simpl_for(formule_init,formule,list_var,list_chgmts)
+qui va évaluer la formule en cours avec la liste des valuations en cours et va en fonction du
+résultat décider éventuellement la progression du parcours dans l’arbre ou le retour sur des
+hypothèses émises précédemment. Avec une approche récursive elle doit in fine renvoyer
+deux éléments :
+— Un booléen précisant si la formule est satisfiable ou non
+— Une liste : la valuation solution si la liste est satisfiable ou la liste vide si elle ne l’est
+pas.
         
+'''
+    form,l1,l2 = simplification_for(formule,list_var,list_chgmts)
+    if form==[]:
+        return True,l1
+    elif form==[[]]:
+        return False,[]
+    else:
+        form,l1,l2 = retour_simpl_for(formule_init,l1,l2)
+        return resol_parcours_arbre_simpl_for(formule_init,form,l1,l2)
+    
+
+
 '''
 formule_init= [[1, 2, 4, -5], [-1, 2, 3, -4], [-1, -2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]] 
 formule= [[2, 3, -4], [-2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]] 
