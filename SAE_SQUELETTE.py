@@ -175,6 +175,8 @@ litteral : un entier non nul traduisant la valeur logique prise par une variable
                 del formule[i][j]
                 break
     return formule
+    
+
 
 
 def init_formule_simpl_for(formule_init,list_var):
@@ -217,8 +219,9 @@ test('essai cas 1 enlever_litt_for : ',enlever_litt_for(for1,litt1),[[-1, 2, 3],
 
 def retablir_for(formule_init,list_chgmts):
     # Créer une liste des variations
+   
     formule = copy.deepcopy(formule_init)
-    list_var = [None for i in range(5)]
+    list_var = [None for i in range(max(max(list_chgmts))+1)]
     # Ajouter les variations
     for changement in list_chgmts:
         list_var[changement[0]] = changement[1]
@@ -227,7 +230,7 @@ def retablir_for(formule_init,list_chgmts):
 
     return formule
 # TEST OK
-'''
+
 formule_init=  [[1, 2, 4, -5], [-1, 2, 3, -4], [-1, -2, -5], [-3, 4, 5], [-2, 3, 4, 5], [-4, 5]]
 list_chgmts1 = [[0, True], [1, True], [2, False]]
 form1 = [[-5], [4, 5], [-4, 5]]
@@ -240,7 +243,7 @@ form3 = [[-5], [5]]
 test('essai cas 1 retablir_for : ',retablir_for(formule_init,list_chgmts1),form1)
 test('essai cas 2 retablir_for : ',retablir_for(formule_init,list_chgmts2),form2)
 test('essai cas 3 retablir_for : ',retablir_for(formule_init,list_chgmts3),form3)
-'''
+
 
 
 def progress(list_var,list_chgmts):
