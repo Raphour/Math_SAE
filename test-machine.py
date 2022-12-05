@@ -4,7 +4,10 @@ import numpy as np
 import copy
 import time 
 
-
+def abs(x):
+    if x<0:
+        return -x
+    return x
 def evaluer_clause(clause,list_var):
     '''Arguments : une liste d'entiers non nuls traduisant une clause,une liste de booléens informant de valeurs logiques connues (ou None dans le cas contraire) pour un ensemble de variables
     Renvoie : None ou booléen
@@ -66,8 +69,8 @@ formule : comme précédemment
 litteral : un entier non nul traduisant la valeur logique prise par une variable
     Renvoie : la formule simplifiée
 '''
-    for i in range(len(formule)-1,-1,-1):
-        for j in range(len(formule[i])):
+    for i in range(len(formule)-1,-1,-1):#Pour toute les clauses de la formules
+        for j in range(len(formule[i])):#Pour tous les litteraux de la clause
             if litteral==formule[i][j]:
                 del formule[i]
                 break
@@ -88,7 +91,7 @@ def init_formule_simpl_for(formule_init,list_var):
 
 def retablir_for(formule_init,list_chgmts):
     # Créer une liste des variations
-   
+    # Copie de la formule
     formule = copy.deepcopy(formule_init)
     list_var = [None for i in range(max(max(list_chgmts))+1)]
     # Ajouter les variations
